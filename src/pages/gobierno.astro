@@ -1,0 +1,71 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+---
+<Layout title="Administración pública · Sectores · Neodimio" description="Cuidamos los recursos de los contribuyentes.">
+  <div class="page">
+    <Header active="sectores" />
+
+    <main class="typewriter-page">
+      <h1 class="typewriter typewriter--home" aria-label="Cuidamos los recursos de los contribuyentes">
+        <span id="typewriter-text"></span><span class="typewriter__cursor" aria-hidden="true"></span>
+      </h1>
+      <div class="gobierno-cta" id="gobierno-cta">
+        <a href="/contacto" class="btn">Contacto</a>
+      </div>
+    </main>
+
+    <footer class="foot">
+      <div class="copy">
+        <div>2026 © Neodimio</div>
+      </div>
+      <a href="/legal" class="legal">Legal</a>
+    </footer>
+  </div>
+</Layout>
+
+<script is:inline>
+  (function () {
+    const PREFIX = "Cuidamos los\n";
+    const HIGHLIGHT = "recursos de los contribuyentes";
+    const FULL = PREFIX + HIGHLIGHT;
+    const el = document.getElementById("typewriter-text");
+    const cta = document.getElementById("gobierno-cta");
+    if (!el) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.innerHTML = "Cuidamos los\n" + '<span class="typewriter__highlight" data-state="unselected">' + HIGHLIGHT + '</span>';
+      if (cta) cta.dataset.state = "visible";
+      return;
+    }
+
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    async function run() {
+      el.textContent = "";
+      for (let i = 1; i <= FULL.length; i++) {
+        el.textContent = FULL.slice(0, i);
+        await wait(55 + Math.random() * 40);
+      }
+      await wait(550);
+
+      el.innerHTML = "Cuidamos los\n" + '<span class="typewriter__highlight" id="typewriter-highlight">' + HIGHLIGHT + '</span>';
+      const h = document.getElementById("typewriter-highlight");
+
+      await wait(80);
+      h.dataset.state = "selecting";
+      await wait(560);
+
+      h.dataset.state = "colored";
+      await wait(420);
+
+      h.dataset.state = "unselected";
+      await wait(400);
+
+      if (cta) cta.dataset.state = "visible";
+    }
+
+    setTimeout(run, 400);
+  })();
+</script>

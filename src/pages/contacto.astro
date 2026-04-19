@@ -1,0 +1,90 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mnjlzpln";
+---
+<Layout title="Contacto · Neodimio" description="Escribinos. Respondemos rápido.">
+  <div class="page page--contact">
+    <Header />
+
+    <main class="contact">
+      <div class="contact__intro">
+        <h1 class="breadcrumb-title">
+          <span class="breadcrumb-title__arrow" aria-hidden="true">&gt;</span>
+          <span class="breadcrumb-title__parent">Contacto</span>
+        </h1>
+        <p class="lede">
+          Contanos en qué andás. Respondemos a todo lo que entra.
+        </p>
+      </div>
+
+      <form id="contact-form" class="form" action={FORMSPREE_ENDPOINT} method="POST" novalidate>
+        <div class="form__row">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" type="text" required autocomplete="name" />
+        </div>
+
+        <div class="form__row">
+          <label for="organizacion">Empresa u organismo</label>
+          <input id="organizacion" name="organizacion" type="text" required />
+        </div>
+
+        <div class="form__row">
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" rows="4" required></textarea>
+        </div>
+
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="honeypot" aria-hidden="true" />
+
+        <div class="form__actions">
+          <button type="submit" class="btn">Enviar</button>
+          <span class="form__status" role="status" aria-live="polite"></span>
+        </div>
+      </form>
+
+      <div id="contact-thanks" class="thanks" hidden>
+        <h2>Recibido.</h2>
+        <p>Gracias por escribir. Te vamos a contestar a la brevedad.</p>
+      </div>
+    </main>
+
+    <footer class="foot">
+      <div class="copy">
+        <div>2026 © Neodimio</div>
+      </div>
+      <a href="/legal" class="legal">Legal</a>
+    </footer>
+  </div>
+</Layout>
+
+<script is:inline>
+  const form = document.getElementById("contact-form");
+  const thanks = document.getElementById("contact-thanks");
+  const status = form?.querySelector(".form__status");
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    status.textContent = "Enviando…";
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" },
+      });
+      if (res.ok) {
+        form.hidden = true;
+        thanks.hidden = false;
+      } else {
+        status.textContent = "No pudimos enviar. Probá de nuevo o escribinos a neodimio@neodimio.com.uy";
+      }
+    } catch {
+      status.textContent = "Sin conexión. Probá de nuevo.";
+    }
+  });
+</script>

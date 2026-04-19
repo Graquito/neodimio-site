@@ -1,0 +1,16 @@
+---
+interface Props {
+  label?: string;
+}
+const { label = "Próximamente" } = Astro.props;
+---
+
+<div class="coming-soon" role="status" aria-label={label}>
+  <span class="coming-soon__word">{label}</span>
+  <svg class="coming-soon__frame" viewBox="0 0 60 60" aria-hidden="true">
+    <path class="cs-bracket cs-bracket--1" d="M 10 20 L 10 10 L 20 10" />
+    <path class="cs-bracket cs-bracket--2" d="M 40 10 L 50 10 L 50 20" />
+    <path class="cs-bracket cs-bracket--3" d="M 50 40 L 50 50 L 40 50" />
+    <path class="cs-bracket cs-bracket--4" d="M 20 50 L 10 50 L 10 40" />
+  </svg>
+</div>

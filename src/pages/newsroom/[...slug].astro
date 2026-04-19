@@ -1,0 +1,49 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import "../../styles/global.css";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("newsroom");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString("es-UY", { day: "numeric", month: "long", year: "numeric" });
+---
+<Layout title={`${post.data.title} · Newsroom · Neodimio`} description={post.data.excerpt}>
+  <div class="page page--scroll">
+    <Header active="noticias" />
+
+    <main class="post">
+      <a href="/newsroom" class="post__back">← Newsroom</a>
+
+      <div class="post__meta">
+        <span class="post__cat">{post.data.category === "Noticia" ? "Noticias" : post.data.category}</span>
+        <span class="post__dot">·</span>
+        <time datetime={post.data.date.toISOString()}>{fmtDate(post.data.date)}</time>
+        {post.data.author && <><span class="post__dot">·</span><span>{post.data.author}</span></>}
+      </div>
+
+      <h1>{post.data.title}</h1>
+
+      <article class="post__body">
+        <Content />
+      </article>
+    </main>
+
+    <footer class="foot">
+      <div class="copy">
+        <div>2026 © Neodimio</div>
+      </div>
+      <a href="/legal" class="legal">Legal</a>
+    </footer>
+  </div>
+</Layout>

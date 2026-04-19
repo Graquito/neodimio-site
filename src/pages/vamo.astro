@@ -1,0 +1,136 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+---
+<Layout title="Vamo · Productos · Neodimio" description="Tu bondi, ahora. Transporte público de Montevideo.">
+  <div class="page page--scroll">
+    <Header active="productos" />
+
+    <main class="vamo-page" id="vamo-main">
+      <h1 class="typewriter" aria-label="Tu bondi, ahora" style="text-transform: uppercase; letter-spacing: -0.02em;">
+        <span id="typewriter-text"></span><span class="typewriter__cursor" aria-hidden="true"></span>
+      </h1>
+
+      <div class="vamo-narrative">
+        <p>
+          Creemos que el transporte público es una de las herramientas más
+          democratizadoras que tiene una ciudad — y que contar con información
+          confiable sobre su funcionamiento no debería ser un problema para
+          nadie. Por eso desarrollamos Vamo, una app para moverte más
+          fácilmente por Montevideo.
+        </p>
+        <p>
+          En tiempos de debate sobre posibles reformas, este es nuestro
+          pequeño aporte para contribuir al desarrollo de un sistema de
+          transporte metropolitano de calidad.
+        </p>
+        <p class="vamo-narrative__close">
+          El bondi no espera. ¡Nos vemos en mayo!
+        </p>
+
+        <div class="app-badges" aria-label="Próximamente en App Store y Google Play">
+          <img src="/badges/app-store.svg" alt="App Store" class="app-badge" />
+          <img src="/badges/google-play.svg" alt="Google Play" class="app-badge" />
+        </div>
+
+        <div class="waitlist-widget">
+          <p class="waitlist-widget__title">Unite a la lista de espera</p>
+          <form class="waitlist-widget__form" id="vamo-waitlist-form" action="https://formspree.io/f/xlgaljpl" method="POST" novalidate>
+            <label for="vamo-waitlist-name" class="visually-hidden">Nombre</label>
+            <input id="vamo-waitlist-name" type="text" name="nombre" placeholder="Nombre" required autocomplete="name" />
+            <label for="vamo-waitlist-phone" class="visually-hidden">Celular</label>
+            <input id="vamo-waitlist-phone" type="tel" name="celular" placeholder="Celular" required autocomplete="tel-national" />
+            <label for="vamo-waitlist-email" class="visually-hidden">Correo electrónico</label>
+            <input id="vamo-waitlist-email" type="email" name="email" placeholder="Correo electrónico" required autocomplete="email" />
+            <button type="submit">Unirme</button>
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="honeypot" aria-hidden="true" />
+          </form>
+          <p class="waitlist-widget__thanks" id="vamo-waitlist-thanks" hidden>
+            Listo. Te escribimos cuando Vamo esté disponible.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="foot">
+      <div class="copy">
+        <div>2026 © Neodimio</div>
+      </div>
+      <a href="/legal" class="legal">Legal</a>
+    </footer>
+  </div>
+</Layout>
+
+<script is:inline>
+  (function () {
+    const PREFIX = "Tu bondi, ";
+    const HIGHLIGHT = "ahora";
+    const SUFFIX = ".";
+    const FULL = PREFIX + HIGHLIGHT + SUFFIX;
+    const el = document.getElementById("typewriter-text");
+    const main = document.getElementById("vamo-main");
+    if (!el || !main) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.innerHTML = PREFIX + '<span class="typewriter__highlight" data-state="unselected">' + HIGHLIGHT + '</span>' + SUFFIX;
+      main.dataset.state = "settled";
+      return;
+    }
+
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    async function run() {
+      el.textContent = "";
+      for (let i = 1; i <= FULL.length; i++) {
+        el.textContent = FULL.slice(0, i);
+        await wait(55 + Math.random() * 40);
+      }
+      await wait(550);
+
+      el.innerHTML = PREFIX + '<span class="typewriter__highlight" id="typewriter-highlight">' + HIGHLIGHT + '</span>' + SUFFIX;
+      const h = document.getElementById("typewriter-highlight");
+
+      await wait(80);
+      h.dataset.state = "selecting";
+      await wait(560);
+
+      h.dataset.state = "colored";
+      await wait(420);
+
+      h.dataset.state = "unselected";
+      await wait(500);
+
+      main.dataset.state = "settled";
+    }
+
+    setTimeout(run, 400);
+  })();
+
+  (function () {
+    const form = document.getElementById("vamo-waitlist-form");
+    const thanks = document.getElementById("vamo-waitlist-thanks");
+    const phone = document.getElementById("vamo-waitlist-phone");
+    if (!form || !thanks) return;
+
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        if (res.ok) {
+          form.hidden = true;
+          thanks.hidden = false;
+        }
+      } catch (_) {}
+    });
+  })();
+</script>

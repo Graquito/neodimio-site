@@ -1,0 +1,88 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+---
+<Layout title="Neodimio" description="Un sistema de transporte público de calidad.">
+  <div class="page">
+    <Header />
+
+    <main class="typewriter-page">
+      <a href="/vamo" class="home-hero" aria-label="Ir a Vamo">
+        <h1 class="typewriter typewriter--home" aria-label="Un sistema de transporte público de calidad">
+          <span id="typewriter-text"></span><span class="typewriter__cursor" aria-hidden="true"></span>
+        </h1>
+        <p class="home-subtitle" id="home-subtitle"></p>
+      </a>
+    </main>
+
+    <footer class="foot">
+      <div class="copy">
+        <div>2026 © Neodimio</div>
+      </div>
+      <a href="/legal" class="legal">Legal</a>
+    </footer>
+  </div>
+</Layout>
+
+<script is:inline>
+  (function () {
+    const PREFIX = "Un sistema de\n";
+    const HIGHLIGHT = "transporte público de calidad";
+    const FULL = PREFIX + HIGHLIGHT;
+    const el = document.getElementById("typewriter-text");
+    const subtitle = document.getElementById("home-subtitle");
+    if (!el) return;
+
+    function computeSubtitleText() {
+      const target = new Date("2026-05-11T00:00:00");
+      const now = new Date();
+      const diff = target - now;
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      if (days > 1) return "Vamo, juntos? Faltan " + days + " días.";
+      if (days === 1) return "Vamo, juntos? Falta 1 día.";
+      if (days === 0) return "Vamo, juntos? Es hoy.";
+      return "Vamo, juntos?";
+    }
+
+    function revealSubtitle() {
+      if (!subtitle) return;
+      subtitle.textContent = computeSubtitleText();
+      subtitle.dataset.state = "visible";
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.innerHTML = "Un sistema de\n" + '<span class="typewriter__highlight" data-state="unselected">' + HIGHLIGHT + '</span>';
+      revealSubtitle();
+      return;
+    }
+
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    async function run() {
+      el.textContent = "";
+      for (let i = 1; i <= FULL.length; i++) {
+        el.textContent = FULL.slice(0, i);
+        await wait(55 + Math.random() * 40);
+      }
+      await wait(550);
+
+      el.innerHTML = "Un sistema de\n" + '<span class="typewriter__highlight" id="typewriter-highlight">' + HIGHLIGHT + '</span>';
+      const h = document.getElementById("typewriter-highlight");
+
+      await wait(80);
+      h.dataset.state = "selecting";
+      await wait(560);
+
+      h.dataset.state = "colored";
+      await wait(420);
+
+      h.dataset.state = "unselected";
+      await wait(400);
+
+      revealSubtitle();
+    }
+
+    setTimeout(run, 400);
+  })();
+</script>
