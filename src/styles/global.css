@@ -144,8 +144,34 @@ nav.links {
   color: var(--ink);
 }
 
+nav.links a {
+  position: relative;
+  transition: color 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+nav.links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1.5px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 nav.links a:hover {
   color: var(--accent);
+}
+
+nav.links a:hover::after {
+  transform: scaleX(1);
+}
+
+nav.links a.is-active::after {
+  transform: scaleX(1);
 }
 
 nav.links .has-menu {
@@ -353,10 +379,22 @@ main.contact {
   padding: 12px 22px;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition:
+    background 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.btn:hover { background: var(--accent); }
+.btn:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 136, 90, 0.18);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
 
 .form__status { font-size: 13px; color: var(--ink); }
 
@@ -667,8 +705,16 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
   opacity: 0.4;
 }
 
+.waitlist-widget__form input {
+  transition:
+    border-color 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .waitlist-widget__form input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 136, 90, 0.10);
+  outline: none;
 }
 
 .waitlist-widget__form input:user-invalid {
@@ -685,12 +731,22 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
   font: inherit;
   font-weight: 700;
   font-size: 14px;
-  transition: background 0.15s ease;
+  transition:
+    background 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   margin-top: 6px;
 }
 
 .waitlist-widget__form button:hover {
   background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 136, 90, 0.18);
+}
+
+.waitlist-widget__form button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
 }
 
 .waitlist-widget__thanks {
@@ -735,12 +791,17 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
   font-weight: 500;
   color: var(--ink);
   opacity: 0;
-  transition: opacity 0.9s cubic-bezier(0.45, 0, 0.55, 1);
+  transform: translateY(10px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   min-height: 1.4em;
+  will-change: opacity, transform;
 }
 
 .home-subtitle[data-state="visible"] {
   opacity: 0.72;
+  transform: translateY(0);
 }
 
 .home-hero:hover .home-subtitle[data-state="visible"] {
@@ -1351,7 +1412,25 @@ main.post h1 {
 
 /* ==========================================================================
    Tier 1 polish: focus, reveal, reduced-motion, view transitions
+   Tier 2/3 polish: header elevation, smooth scroll, hover/active states
    ========================================================================== */
+
+html { scroll-behavior: smooth; }
+
+header.nav {
+  transition:
+    border-bottom-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  border-bottom: 1px solid transparent;
+}
+
+header.nav.is-scrolled {
+  border-bottom-color: var(--rule);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
+}
 
 :focus { outline: none; }
 
@@ -1417,6 +1496,7 @@ textarea:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;

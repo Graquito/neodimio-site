@@ -33,6 +33,20 @@ const cls = (key: string) => (active === key ? "is-active" : undefined);
 
 <script is:inline>
   (function () {
+    const headerEl = document.querySelector("header.nav");
+    if (headerEl && !window.__neodimioHeaderScrollBound) {
+      window.__neodimioHeaderScrollBound = true;
+      const update = () => {
+        const h = document.querySelector("header.nav");
+        if (!h) return;
+        if (window.scrollY > 8) h.classList.add("is-scrolled");
+        else h.classList.remove("is-scrolled");
+      };
+      update();
+      window.addEventListener("scroll", update, { passive: true });
+      document.addEventListener("astro:page-load", update);
+    }
+
     const toggle = document.querySelector(".menu-toggle");
     const menu = document.getElementById("mobile-menu");
     if (!toggle || !menu) return;
