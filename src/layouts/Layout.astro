@@ -1,4 +1,5 @@
 ---
+import { ViewTransitions } from "astro:transitions";
 interface Props {
   title?: string;
   description?: string;
@@ -26,8 +27,28 @@ const {
       gtag('js', new Date());
       gtag('config', 'G-TR8BM0DCPK');
     </script>
+    <ViewTransitions />
   </head>
   <body>
     <slot />
+    <script is:inline>
+      function setupRevealOnScroll() {
+        const items = document.querySelectorAll(".reveal");
+        if (!items.length || !("IntersectionObserver" in window)) {
+          items.forEach((i) => i.classList.add("is-visible"));
+          return;
+        }
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+        items.forEach((i) => observer.observe(i));
+      }
+      document.addEventListener("astro:page-load", setupRevealOnScroll);
+    </script>
   </body>
 </html>
