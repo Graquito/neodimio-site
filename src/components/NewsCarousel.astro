@@ -1,0 +1,162 @@
+---
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("newsroom")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString("es-UY", { day: "numeric", month: "long", year: "numeric" });
+
+const catLabel = (c: string) => (c === "Noticia" ? "Noticias" : c);
+---
+
+<section class="news-carousel" aria-roledescription="carrusel" aria-label="Novedades">
+  <div class="news-carousel__viewport">
+    <div class="news-carousel__track" data-track>
+      {posts.map((post, i) => (
+        <a
+          href={`/newsroom/${post.slug}`}
+          class="news-slide"
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${i + 1} de ${posts.length}: ${post.data.title}`}
+          data-slide
+        >
+          <div class="news-slide__inner">
+            <div class="news-slide__meta">
+              <span class="news-slide__cat">{catLabel(post.data.category)}</span>
+              <span class="news-slide__sep" aria-hidden="true">·</span>
+              <time datetime={post.data.date.toISOString()}>{fmtDate(post.data.date)}</time>
+            </div>
+            <h2 class="news-slide__title">{post.data.title}</h2>
+            <p class="news-slide__excerpt">{post.data.excerpt}</p>
+            <span class="news-slide__cta" aria-hidden="true">Leer la nota →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <button class="news-carousel__arrow news-carousel__arrow--prev" type="button" aria-label="Slide anterior" data-prev>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button class="news-carousel__arrow news-carousel__arrow--next" type="button" aria-label="Slide siguiente" data-next>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <nav class="news-carousel__dots" aria-label="Seleccionar slide">
+    {posts.map((_, i) => (
+      <button
+        type="button"
+        class="news-carousel__dot"
+        data-dot={i}
+        aria-label={`Ir al slide ${i + 1}`}
+      ></button>
+    ))}
+  </nav>
+</section>
+
+<script is:inline>
+  (function () {
+    const root = document.querySelector(".news-carousel");
+    if (!root) return;
+
+    const track = root.querySelector("[data-track]");
+    const slides = Array.from(root.querySelectorAll("[data-slide]"));
+    const dots = Array.from(root.querySelectorAll("[data-dot]"));
+    const prevBtn = root.querySelector("[data-prev]");
+    const nextBtn = root.querySelector("[data-next]");
+    if (!track || slides.length === 0) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const AUTO_MS = 6500;
+    let i = 0;
+    let timer = null;
+
+    function render() {
+      track.style.transform = "translate3d(" + (-i * 100) + "%, 0, 0)";
+      slides.forEach((s, k) => {
+        s.setAttribute("aria-hidden", String(k !== i));
+        s.tabIndex = k === i ? 0 : -1;
+      });
+      dots.forEach((d, k) => {
+        d.classList.toggle("is-active", k === i);
+        d.setAttribute("aria-current", k === i ? "true" : "false");
+      });
+    }
+
+    function go(n) {
+      i = (n + slides.length) % slides.length;
+      render();
+    }
+    function next() { go(i + 1); }
+    function prev() { go(i - 1); }
+
+    function start() {
+      if (reduced) return;
+      stop();
+      timer = window.setInterval(next, AUTO_MS);
+    }
+    function stop() {
+      if (timer != null) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    nextBtn && nextBtn.addEventListener("click", (e) => { e.preventDefault(); next(); start(); });
+    prevBtn && prevBtn.addEventListener("click", (e) => { e.preventDefault(); prev(); start(); });
+
+    dots.forEach((d) => {
+      d.addEventListener("click", (e) => {
+        e.preventDefault();
+        const k = Number(d.getAttribute("data-dot"));
+        if (!Number.isNaN(k)) { go(k); start(); }
+      });
+    });
+
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", start);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("focusout", start);
+
+    document.addEventListener("keydown", (e) => {
+      if (document.activeElement && !root.contains(document.activeElement)) {
+        // Only respond to global arrows when nothing else is focused outside
+      }
+      if (e.key === "ArrowRight") { next(); start(); }
+      else if (e.key === "ArrowLeft") { prev(); start(); }
+    });
+
+    // Touch / swipe
+    let startX = null;
+    let dx = 0;
+    track.addEventListener("touchstart", (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      dx = 0;
+      stop();
+    }, { passive: true });
+    track.addEventListener("touchmove", (e) => {
+      if (startX == null) return;
+      dx = e.touches[0].clientX - startX;
+    }, { passive: true });
+    track.addEventListener("touchend", () => {
+      if (startX == null) return;
+      const threshold = 40;
+      if (dx > threshold) prev();
+      else if (dx < -threshold) next();
+      startX = null;
+      dx = 0;
+      start();
+    });
+
+    render();
+    start();
+  })();
+</script>

@@ -1,15 +1,90 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
-import ComingSoon from "../../components/ComingSoon.astro";
+import { getCollection } from "astro:content";
 import "../../styles/global.css";
+
+const posts = (await getCollection("newsroom")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString("es-UY", { day: "numeric", month: "long", year: "numeric" });
+
+const catLabel = (c: string) => (c === "Noticia" ? "Noticias" : c);
+
+// Tiempo de lectura: 200 palabras/min, mínimo 1.
+const readTime = (markdown: string) => {
+  const words = markdown.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+};
+
+const [featured, ...rest] = posts;
 ---
-<Layout title="Newsroom · Neodimio" description="Próximamente.">
-  <div class="page">
+<Layout
+  title="Newsroom · Neodimio"
+  description="Novedades, investigaciones y opiniones del equipo de Neodimio."
+>
+  <div class="page page--scroll">
     <Header active="noticias" />
 
-    <main class="typewriter-page">
-      <ComingSoon />
+    <main class="newsroom">
+      <header class="newsroom__head">
+        <span class="newsroom__eyebrow">Comunicación</span>
+        <h1 class="newsroom__title">Newsroom</h1>
+        <p class="newsroom__lede">
+          Novedades, investigaciones y opiniones del equipo de Neodimio.
+        </p>
+        <div class="newsroom__count" aria-label={`${posts.length} publicaciones`}>
+          {posts.length} {posts.length === 1 ? "publicación" : "publicaciones"}
+        </div>
+      </header>
+
+      {featured && (
+        <a href={`/newsroom/${featured.slug}`} class="newsroom-featured">
+          <div class="newsroom-featured__meta">
+            <span class="post__cat">{catLabel(featured.data.category)}</span>
+            <span class="post__dot" aria-hidden="true">·</span>
+            <time datetime={featured.data.date.toISOString()}>{fmtDate(featured.data.date)}</time>
+            {featured.data.author && (
+              <>
+                <span class="post__dot" aria-hidden="true">·</span>
+                <span>{featured.data.author}</span>
+              </>
+            )}
+            <span class="post__dot" aria-hidden="true">·</span>
+            <span>{readTime(featured.body)} min de lectura</span>
+          </div>
+          <h2 class="newsroom-featured__title">{featured.data.title}</h2>
+          <p class="newsroom-featured__excerpt">{featured.data.excerpt}</p>
+        </a>
+      )}
+
+      {rest.length > 0 && (
+        <ul class="newsroom__list" role="list">
+          {rest.map((post) => (
+            <li class="newsroom__item">
+              <a href={`/newsroom/${post.slug}`} class="newsroom-card">
+                <div class="newsroom-card__meta">
+                  <span class="post__cat">{catLabel(post.data.category)}</span>
+                  <span class="post__dot" aria-hidden="true">·</span>
+                  <time datetime={post.data.date.toISOString()}>{fmtDate(post.data.date)}</time>
+                  {post.data.author && (
+                    <>
+                      <span class="post__dot" aria-hidden="true">·</span>
+                      <span>{post.data.author}</span>
+                    </>
+                  )}
+                  <span class="post__dot" aria-hidden="true">·</span>
+                  <span>{readTime(post.body)} min</span>
+                </div>
+                <h2 class="newsroom-card__title">{post.data.title}</h2>
+                <p class="newsroom-card__excerpt">{post.data.excerpt}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
 
     <footer class="foot">

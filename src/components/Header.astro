@@ -1,82 +1,67 @@
 ---
 interface Props {
-  active?: "productos" | "sectores" | "noticias" | "compania";
+  active?: "gobierno" | "noticias";
 }
 const { active } = Astro.props;
 const cls = (key: string) => (active === key ? "is-active" : undefined);
 ---
 
 <header class="nav">
-  <a href="/" class="brand" aria-label="Neodimio"><span class="l" style="--i:0">N</span><span class="l" style="--i:1">e</span><span class="eye" style="--dir:1">o</span><span class="l" style="--i:2">d</span><span class="l" style="--i:3">i</span><span class="l" style="--i:4">m</span><span class="l" style="--i:5">i</span><span class="eye" style="--dir:-1">o</span></a>
-
-  <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" type="button">
-    <span class="menu-toggle__bar"></span>
-    <span class="menu-toggle__bar"></span>
-  </button>
+  <a href="/" class="brand" aria-label="Neodimio">
+    <img src="/neodimio-green-transparent.png" alt="" class="brand__mark" width="827" height="140" />
+  </a>
 
   <nav class="links">
-    <a href="/productos" class={cls("productos")}>Productos</a>
-    <a href="/sectores" class={cls("sectores")}>Sectores</a>
+    <a href="/gobierno" class={cls("gobierno")}>Gobierno</a>
     <a href="/newsroom" class={cls("noticias")}>Noticias</a>
-    <a href="/about" class={cls("compania")}>Acerca de</a>
   </nav>
+
+  <div class="nav__right">
+    <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" type="button">
+      <span class="menu-toggle__bar"></span>
+      <span class="menu-toggle__bar"></span>
+    </button>
+  </div>
 </header>
 
-<div id="mobile-menu" class="mobile-menu" data-active="main" aria-hidden="true">
-  <div class="mobile-menu__panel mobile-menu__panel--main">
-    <a href="/productos" class="mobile-link">Productos</a>
-    <a href="/sectores" class="mobile-link">Sectores</a>
-    <a href="/newsroom" class="mobile-link">Noticias</a>
-    <a href="/about" class="mobile-link">Acerca de</a>
-  </div>
+<div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+  <a href="/gobierno" class="mobile-link">Gobierno</a>
+  <a href="/newsroom" class="mobile-link">Noticias</a>
 </div>
 
 <script is:inline>
+  // Event delegation: sobrevive a ViewTransitions sin re-bindear.
   (function () {
-    const headerEl = document.querySelector("header.nav");
-    if (headerEl && !window.__neodimioHeaderScrollBound) {
-      window.__neodimioHeaderScrollBound = true;
-      const update = () => {
-        const h = document.querySelector("header.nav");
-        if (!h) return;
-        if (window.scrollY > 8) h.classList.add("is-scrolled");
-        else h.classList.remove("is-scrolled");
-      };
-      update();
-      window.addEventListener("scroll", update, { passive: true });
-      document.addEventListener("astro:page-load", update);
-    }
+    if (window.__neodimioMenuBound) return;
+    window.__neodimioMenuBound = true;
 
-    const toggle = document.querySelector(".menu-toggle");
-    const menu = document.getElementById("mobile-menu");
-    if (!toggle || !menu) return;
-
-    const setOpen = (open) => {
+    function setOpen(open) {
+      const toggle = document.querySelector(".menu-toggle");
+      const menu = document.getElementById("mobile-menu");
+      if (!toggle || !menu) return;
       menu.classList.toggle("is-open", open);
       toggle.classList.toggle("is-open", open);
       toggle.setAttribute("aria-expanded", String(open));
       menu.setAttribute("aria-hidden", String(!open));
-      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
       document.body.style.overflow = open ? "hidden" : "";
-      if (open) menu.dataset.active = "main";
-    };
+    }
 
-    toggle.addEventListener("click", () => setOpen(!menu.classList.contains("is-open")));
-
-    menu.querySelectorAll("[data-target]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        menu.dataset.active = btn.getAttribute("data-target");
-      });
-    });
-
-    menu.querySelectorAll("[data-back]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        menu.dataset.active = "main";
-      });
+    document.addEventListener("click", (e) => {
+      const toggle = e.target.closest(".menu-toggle");
+      if (!toggle) return;
+      const menu = document.getElementById("mobile-menu");
+      if (!menu) return;
+      setOpen(!menu.classList.contains("is-open"));
     });
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && menu.classList.contains("is-open")) setOpen(false);
+      const menu = document.getElementById("mobile-menu");
+      if (e.key === "Escape" && menu && menu.classList.contains("is-open")) {
+        setOpen(false);
+      }
     });
+
+    document.addEventListener("astro:before-preparation", () => setOpen(false));
+    document.addEventListener("astro:page-load", () => setOpen(false));
   })();
 </script>

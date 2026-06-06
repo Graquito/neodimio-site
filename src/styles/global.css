@@ -2,7 +2,10 @@
   --bg: #FFFFFF;
   --ink: #000000;
   --rule: #E5E5E5;
-  --accent: #00885A;
+  --accent: #016846;
+  /* Fuente del newsroom: Source Sans (la del sitio de Aerolíneas). El resto
+     del sitio sigue en Baloo 2. */
+  --font-news: "Source Sans 3", "Source Sans Pro", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -13,19 +16,14 @@ html, body {
   min-height: 100%;
 }
 
-html, body {
-  overflow: hidden;
-}
-
-html:has(.page--scroll),
-body:has(.page--scroll) {
-  overflow: auto;
+body {
+  overflow-x: hidden;
 }
 
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   letter-spacing: -0.005em;
@@ -39,192 +37,116 @@ a {
   text-decoration: none;
 }
 
-.page {
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  padding: 24px 40px;
-  gap: 24px;
-}
+.page { min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1; width: 100%; padding: 0 clamp(20px, 4vw, 40px); }
 
+/* mains con padding propio (newsroom, post, subpage, carousel) sobreescriben */
+main.carousel-main { padding: 0; }
+
+/* ─── Header (patrón CheVamo adaptado a brand verde Neodimio) ─── */
+
+/* Header altura total = 80px (igual que CheVamo).
+   Logo Neodimio es wordmark 5.9:1 — chico (20px alto = ~118px ancho).
+   Pills del nav fuerzan min-height 44px = igual altura que el brand mark
+   de CheVamo. Así el header siempre mide 18+44+18 = 80px sin importar
+   qué tan chico sea el logo. */
 header.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg);
+  padding: 18px clamp(20px, 4vw, 56px);
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--rule);
 }
 
 .brand {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  font-weight: 800;
-  font-size: 25px;
-  letter-spacing: -0.015em;
-  display: inline-block;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  min-height: 44px;
 }
 
-.brand .l {
-  display: inline-block;
-  font-size: 0;
-  line-height: 1;
-  vertical-align: baseline;
-  opacity: 0;
-  transform: translateY(-4px);
-  animation: brand-letter-cycle 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-  animation-delay: calc(var(--i) * 0.12s);
+.brand__mark {
+  height: 20px;
+  width: auto;
+  display: block;
 }
 
-@keyframes brand-letter-cycle {
-  0%, 16%   { font-size: 0;      opacity: 0;    transform: translateY(-4px); }
-  23%       { font-size: 0.88em; opacity: 0.7;  transform: translateY(1.5px); }
-  27%       { font-size: 1.04em; opacity: 1;    transform: translateY(-0.5px); }
-  31%, 72%  { font-size: 1em;    opacity: 1;    transform: translateY(0); }
-  76%       { font-size: 1.01em; opacity: 1;    transform: translateY(-0.3px); }
-  80%       { font-size: 0.96em; opacity: 0.85; transform: translateY(0.5px); }
-  86%, 100% { font-size: 0;      opacity: 0;    transform: translateY(4px); }
-}
-
-.brand .eye {
-  color: var(--accent);
-  display: inline-block;
-  position: relative;
-  font-size: 1em;
-  line-height: 1;
-  vertical-align: baseline;
-}
-
-.brand .eye::after {
-  content: "";
-  position: absolute;
-  top: 52%;
-  left: 50%;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--ink);
-  transform: translate(-50%, -50%);
-  animation: brand-pupil-cycle 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
-@keyframes brand-pupil-cycle {
-  0%    { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-  3%    { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
-  5%    { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  6.5%  { opacity: 1; transform: translate(-50%, -50%) scale(1, 0.15); }
-  8%    { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  10.5% { opacity: 1; transform: translate(calc(-50% + (-1 * var(--dir, 0)) * 3px), -50%) scale(1); }
-  12%   { opacity: 1; transform: translate(calc(-50% + (-1 * var(--dir, 0)) * 3px), -50%) scale(1); }
-  14%   { opacity: 1; transform: translate(calc(-50% + var(--dir, 0) * 3px), -50%) scale(1); }
-  15.8% { opacity: 1; transform: translate(calc(-50% + var(--dir, 0) * 3px), -50%) scale(1); }
-  17.3% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  18%   { opacity: 1; transform: translate(-50%, -50%) scale(1, 0.15); }
-  18.8% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  19.8% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-  82%   { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-  84.5% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
-  86.5% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  89%   { opacity: 1; transform: translate(calc(-50% + 1.8px), -50%) scale(1); }
-  92.5% { opacity: 1; transform: translate(calc(-50% - 1.8px), -50%) scale(1); }
-  95%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  96.5% { opacity: 1; transform: translate(-50%, -50%) scale(1, 0.15); }
-  98%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100%  { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .brand .l { font-size: 1em; opacity: 1; transform: none; animation: none; }
-  .brand .eye::after { display: none; }
-}
-
-nav.links {
-  display: flex;
-  gap: 28px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
+nav.links { display: flex; gap: 8px; align-items: center; margin-left: auto; }
 
 nav.links a {
-  position: relative;
-  transition: color 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-nav.links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -4px;
-  height: 1.5px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  padding: 0 16px;
+  border-radius: 999px;
+  transition: background 0.2s cubic-bezier(.25, 0, .1, 1),
+              color 0.15s cubic-bezier(.25, 0, .1, 1),
+              transform 0.2s cubic-bezier(.25, 0, .1, 1);
 }
 
 nav.links a:hover {
-  color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  transform: translateY(-1px);
 }
 
-nav.links a:hover::after {
-  transform: scaleX(1);
+nav.links a.is-active {
+  background: var(--accent);
+  color: var(--bg);
 }
 
-nav.links a.is-active::after {
-  transform: scaleX(1);
-}
-
-nav.links .has-menu {
-  position: relative;
-  padding-bottom: 14px;
-  margin-bottom: -14px;
-  display: flex;
+.nav__right {
+  display: inline-flex;
   align-items: center;
+  gap: 12px;
 }
 
-nav.links .submenu {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translate(-50%, -4px);
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  width: 40px; height: 40px;
+  flex-direction: column; justify-content: center; gap: 5px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.menu-toggle__bar {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--accent);
+  transition: transform 0.2s;
+}
+
+.menu-toggle.is-open .menu-toggle__bar:nth-child(1) { transform: translateY(3.5px) rotate(45deg); }
+.menu-toggle.is-open .menu-toggle__bar:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none;
+  position: fixed; top: 68px; left: 0; right: 0; bottom: 0;
   background: var(--bg);
-  border: 1px solid var(--rule);
-  border-radius: 14px;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 200px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  z-index: 10;
+  padding: 32px clamp(20px, 4vw, 56px);
+  flex-direction: column; gap: 4px;
+  z-index: 99;
 }
 
-nav.links .submenu a {
-  padding: 4px 6px;
-  border-radius: 8px;
-  transition: background 0.12s ease, color 0.12s ease;
-}
+.mobile-menu.is-open { display: flex; }
 
-nav.links .submenu a:hover {
-  background: rgba(0, 136, 90, 0.08);
+.mobile-link {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 700; letter-spacing: -0.03em;
   color: var(--accent);
+  padding: 12px 0;
 }
 
-nav.links .has-menu:hover .submenu,
-nav.links .has-menu:focus-within .submenu {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translate(-50%, 0);
-}
-
-nav.links .submenu a {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ink);
-  line-height: 1.2;
+@media (max-width: 720px) {
+  nav.links { display: none; }
+  .menu-toggle { display: flex; }
 }
 
 main.hero {
@@ -241,7 +163,7 @@ main.hero .eyebrow {
 }
 
 main.hero h1 {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(40px, 6vw, 72px);
   line-height: 1.05;
@@ -268,13 +190,13 @@ footer.foot {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--ink);
   border-top: 1px solid var(--rule);
-  padding-top: 16px;
+  padding: 16px clamp(20px, 4vw, 40px) 24px;
 }
 
 footer.foot .copy {
@@ -288,16 +210,23 @@ footer.foot .legal:hover {
   color: var(--ink);
 }
 
-nav.links a.is-active { color: var(--accent); }
-
 main.contact {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-self: center;
+  align-self: start;
   width: 100%;
-  max-width: 1100px;
+  max-width: 720px;
   margin: 0 auto;
+  padding-top: 24px;
+}
+
+.contact__mail {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  transition: color 0.15s ease;
+}
+
+.contact__mail:hover {
+  color: var(--ink);
 }
 
 .contact__intro .eyebrow {
@@ -309,7 +238,7 @@ main.contact {
 }
 
 .contact__intro h1 {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(40px, 5vw, 64px);
   line-height: 1.05;
@@ -399,7 +328,7 @@ main.contact {
 .form__status { font-size: 13px; color: var(--ink); }
 
 .thanks h2 {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: 32px;
   letter-spacing: -0.02em;
@@ -408,8 +337,218 @@ main.contact {
 
 .thanks p { margin: 0; color: var(--ink); }
 
+/* ─── News Carousel (home) ─── */
+
+.page--carousel {
+  /* sin padding ni gap — el header pega top y el carrusel ocupa el resto */
+}
+
+main.carousel-main {
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+}
+
+.news-carousel {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  background: var(--bg);
+}
+
+.news-carousel__viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.news-carousel__track {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.news-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(28px, 6vw, 96px);
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  position: relative;
+}
+
+.news-slide__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.6vw, 22px);
+  max-width: 920px;
+  width: 100%;
+  text-align: left;
+}
+
+.news-slide__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+.news-slide__cat {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+
+.news-slide__sep {
+  opacity: 0.45;
+}
+
+.news-slide__title {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: clamp(34px, 6vw, 84px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.news-slide__excerpt {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: clamp(16px, 1.4vw, 20px);
+  line-height: 1.5;
+  color: var(--ink);
+  opacity: 0.85;
+  max-width: 62ch;
+  margin: 0;
+}
+
+.news-slide__cta {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  margin-top: 4px;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  display: inline-block;
+}
+
+.news-slide:hover .news-slide__cta,
+.news-slide:focus-visible .news-slide__cta {
+  transform: translateX(4px);
+}
+
+.news-slide:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -8px;
+  border-radius: 18px;
+}
+
+.news-carousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 2;
+}
+
+.news-carousel__arrow:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.news-carousel__arrow:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.news-carousel__arrow--prev { left: 18px; }
+.news-carousel__arrow--next { right: 18px; }
+
+.news-carousel__dots {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.news-carousel__dot {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  border: 0;
+  background: var(--rule);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.news-carousel__dot.is-active {
+  background: var(--accent);
+  width: 40px;
+}
+
+.news-carousel__dot:hover { background: var(--ink); }
+.news-carousel__dot.is-active:hover { background: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .news-carousel__track { transition: none; }
+  .news-slide__cta { transition: none; }
+}
+
 @media (max-width: 760px) {
-  main.contact { grid-template-columns: 1fr; gap: 32px; }
+  /* .page--carousel ya no necesita padding override */
+  .news-carousel__arrow {
+    width: 38px;
+    height: 38px;
+  }
+  .news-carousel__arrow--prev { left: 10px; }
+  .news-carousel__arrow--next { right: 10px; }
+  .news-carousel__dots { bottom: 16px; }
+  .news-carousel__dot { width: 18px; }
+  .news-carousel__dot.is-active { width: 30px; }
+}
+
+@media (max-width: 760px) {
+  main.contact { padding-top: 16px; }
+}
+
+@media (max-width: 480px) {
+  .typewriter:not(.typewriter--home),
+  .coming-soon,
+  .event__date {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
 }
 
 main.sector {
@@ -423,7 +562,7 @@ main.sector {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(22px, 5vw, 68px);
   line-height: 1.15;
@@ -489,7 +628,7 @@ main.event-page {
 }
 
 .event__label {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -498,7 +637,7 @@ main.event-page {
 }
 
 .event__date {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(40px, 8vw, 104px);
   line-height: 1.05;
@@ -529,7 +668,7 @@ main.event-page {
 }
 
 .event__countdown {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: clamp(15px, 1.6vw, 20px);
   font-weight: 500;
   color: var(--ink);
@@ -551,13 +690,16 @@ main.event-page {
 }
 
 main.typewriter-page {
-  align-self: center;
-  justify-self: center;
   width: 100%;
   max-width: 1200px;
-  padding: 0 4vw;
-  text-align: center;
   margin-inline: auto;
+  padding: clamp(40px, 8vh, 96px) clamp(20px, 4vw, 40px);
+  /* Centrado vertical + horizontal en el viewport, igual que .home-hero.
+     main ya crece con flex:1 dentro del .page flex-column. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 main.vamo-page {
@@ -667,7 +809,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 }
 
 .waitlist-widget__title {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -761,7 +903,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 }
 
 .typewriter {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(22px, 5vw, 68px);
   line-height: 1.15;
@@ -786,7 +928,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 
 .home-subtitle {
   margin: 32px 0 0 0;
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: clamp(15px, 1.5vw, 19px);
   font-weight: 500;
   color: var(--ink);
@@ -864,7 +1006,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 }
 
 .sector__intro h1 {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(40px, 5vw, 64px);
   line-height: 1;
@@ -881,7 +1023,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 }
 
 .breadcrumb-title.breadcrumb-title {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(24px, 2.8vw, 36px);
   line-height: 1.25;
@@ -942,7 +1084,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 }
 
 .product-card__title {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(28px, 3.2vw, 36px);
   line-height: 1.1;
@@ -1000,7 +1142,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 }
 
 .signup__title {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: 22px;
   line-height: 1.2;
@@ -1172,7 +1314,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 .mobile-menu[data-active="sectores"] .mobile-menu__panel--sub  { transform: translateX(0); }
 
 .mobile-link {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -1200,7 +1342,7 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
   align-self: flex-start;
   background: transparent;
   border: none;
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: var(--ink);
@@ -1216,9 +1358,6 @@ main.vamo-page[data-state="settled"] .vamo-narrative {
 .mobile-back:hover { opacity: 1; color: var(--accent); }
 
 @media (max-width: 640px) {
-  .page { padding: 20px; }
-  nav.links { display: none; }
-  .menu-toggle { display: inline-block; }
   main.hero h1 { max-width: 100%; }
   html, body { overflow: auto; }
 }
@@ -1233,7 +1372,7 @@ main.newsroom {
 .newsroom__head { margin-bottom: 32px; }
 
 .newsroom__head h1 {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(40px, 5vw, 64px);
   line-height: 1;
@@ -1308,7 +1447,7 @@ main.newsroom {
 }
 
 .card__title {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: 22px;
   line-height: 1.25;
@@ -1350,6 +1489,293 @@ main.post {
   align-self: start;
 }
 
+/* ─── Home (typewriter hero + sección novedades) ─── */
+
+main.home-main {
+  width: 100%;
+}
+
+.home-hero {
+  min-height: calc(100vh - 80px - 60px); /* descontando header sticky + footer */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(40px, 8vh, 96px) clamp(20px, 4vw, 40px);
+}
+
+.home-hero .typewriter {
+  text-align: center;
+}
+
+.home-news {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(48px, 8vh, 96px) clamp(20px, 4vw, 40px) clamp(64px, 10vh, 112px);
+  border-top: 1px solid var(--rule);
+}
+
+.home-news__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: clamp(28px, 4vh, 40px);
+  flex-wrap: wrap;
+}
+
+.home-news__eyebrow {
+  display: inline-block;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.55;
+  margin-bottom: 10px;
+}
+
+.home-news__title {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.home-news__link {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  padding: 8px 14px;
+  border-radius: 999px;
+  transition: background 0.2s cubic-bezier(.25, 0, .1, 1), transform 0.2s cubic-bezier(.25, 0, .1, 1);
+}
+
+.home-news__link:hover {
+  background: var(--accent);
+  color: var(--bg);
+  transform: translateY(-1px);
+}
+
+/* El NewsCarousel original ocupa main full-bleed; acá lo metemos en una
+   section con max-width. Le damos altura controlada para que no domine. */
+.home-news .news-carousel {
+  height: clamp(360px, 50vh, 480px);
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .home-hero { min-height: 60vh; }
+}
+
+/* ─── Newsroom index (editorial-pro) ─── */
+
+main.newsroom {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  align-self: start;
+  padding: clamp(40px, 6vh, 64px) clamp(20px, 4vw, 40px) clamp(56px, 8vh, 96px);
+}
+
+.newsroom__head {
+  margin-bottom: clamp(40px, 6vh, 64px);
+  padding-bottom: clamp(28px, 4vh, 40px);
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+
+.newsroom__eyebrow {
+  display: inline-block;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.55;
+  margin-bottom: 16px;
+}
+
+.newsroom__title {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: clamp(44px, 6vw, 80px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  margin: 0 0 16px 0;
+}
+
+.newsroom__lede {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: clamp(16px, 1.2vw, 19px);
+  line-height: 1.55;
+  color: var(--ink);
+  opacity: 0.7;
+  margin: 0;
+  max-width: 56ch;
+}
+
+.newsroom__count {
+  position: absolute;
+  bottom: clamp(28px, 4vh, 40px);
+  right: 0;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.45;
+}
+
+/* Metadata común: mono, hairlines, separadores */
+.newsroom-card__meta,
+.newsroom-featured__meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.6;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.post__cat {
+  color: var(--accent);
+  font-weight: 700;
+  opacity: 1;
+}
+
+.post__dot {
+  opacity: 0.4;
+}
+
+/* Featured (primer post): hero-like, más grande */
+.newsroom-featured {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 0 0 clamp(40px, 6vh, 64px);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: clamp(40px, 6vh, 64px);
+}
+
+.newsroom-featured__title {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin: 0 0 16px 0;
+  max-width: 22ch;
+  transition: color 0.18s ease;
+}
+
+.newsroom-featured__excerpt {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: clamp(17px, 1.3vw, 21px);
+  line-height: 1.5;
+  color: var(--ink);
+  opacity: 0.8;
+  margin: 0;
+  max-width: 62ch;
+}
+
+.newsroom-featured:hover .newsroom-featured__title,
+.newsroom-featured:focus-visible .newsroom-featured__title {
+  color: var(--accent);
+}
+
+/* Lista de cards (resto de posts) */
+.newsroom__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.newsroom__item {
+  border-top: 1px solid var(--rule);
+}
+
+.newsroom__item:first-child {
+  border-top: 0;
+}
+
+.newsroom-card {
+  display: block;
+  padding: clamp(24px, 3.5vh, 36px) 0;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+.newsroom-card__title {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 10px 0;
+  transition: color 0.18s ease;
+}
+
+.newsroom-card__excerpt {
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: clamp(14px, 1vw, 16px);
+  line-height: 1.55;
+  color: var(--ink);
+  opacity: 0.75;
+  margin: 0;
+  max-width: 62ch;
+}
+
+.newsroom-card:hover .newsroom-card__title,
+.newsroom-card:focus-visible .newsroom-card__title {
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .newsroom-card__title,
+  .newsroom-featured__title { transition: none; }
+}
+
+@media (max-width: 640px) {
+  .newsroom__count { position: static; margin-top: 16px; }
+}
+
+.newsroom-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .newsroom-card__title,
+  .newsroom-card__cta { transition: none; }
+}
+
+@media (max-width: 640px) {
+  .newsroom__head { margin-bottom: 32px; }
+  .newsroom-card { padding: 22px 0; }
+}
+
 .post__back {
   display: inline-block;
   font-size: 13px;
@@ -1384,7 +1810,7 @@ main.post {
 .post__dot { opacity: 0.4; }
 
 main.post h1 {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: clamp(32px, 4vw, 48px);
   line-height: 1.1;
@@ -1403,11 +1829,34 @@ main.post h1 {
 .post__body em { font-style: italic; }
 
 .post__body h2 {
-  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Baloo 2", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 700;
   font-size: 24px;
   letter-spacing: -0.02em;
   margin: 2em 0 0.5em 0;
+}
+
+/* ─── Newsroom + post: tipografía Source Sans (la del sitio de Aerolíneas) ───
+   Web 3: el newsroom adopta Source Sans (índice + detalle, títulos incluidos)
+   para un feel editorial/periodístico, distinto del resto del sitio (Baloo 2).
+   El prefijo de contenedor (main.newsroom / main.post) gana en specificity
+   sobre las declaraciones Baloo de arriba; los elementos sin font-family
+   propio heredan de los contenedores. */
+main.newsroom,
+main.post,
+main.newsroom .newsroom__eyebrow,
+main.newsroom .newsroom__title,
+main.newsroom .newsroom__lede,
+main.newsroom .newsroom__count,
+main.newsroom .newsroom-card__meta,
+main.newsroom .newsroom-featured__meta,
+main.newsroom .newsroom-featured__title,
+main.newsroom .newsroom-featured__excerpt,
+main.newsroom .newsroom-card__title,
+main.newsroom .newsroom-card__excerpt,
+main.post h1,
+main.post .post__body h2 {
+  font-family: var(--font-news);
 }
 
 /* ==========================================================================
